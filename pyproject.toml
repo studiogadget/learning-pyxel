@@ -1,0 +1,173 @@
+[project]
+name = "learning-pyxel"
+version = "0.1.0"
+description = "A modern Python project template optimized for GitHub Copilot with strict guardrails"
+requires-python = ">=3.12"
+dependencies = [
+    "structlog~=25.4",
+    "rich~=14.0", # for structlog
+    # 環境変数の読み込み（Docker/ローカル運用で使用）
+    "python-dotenv~=1.0",
+    # Windows等でのIANAタイムゾーンデータ供給（ZoneInfoで使用）
+    "tzdata~=2025.2",
+    "pyxel>=2.8.7",
+]
+authors = [
+  {name = "hoge", email = "aaa_bbb@xxxxx.co.jp"},
+]
+maintainers = [
+  {name = "hoge", email = "aaa_bbb@xxxxx.co.jp"},
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest~=9.0",
+    "pytest-cov~=7.0",
+    "pytest-xdist~=3.8",
+    "pytest-benchmark~=5.1",
+    "playwright==1.57.*",
+    "hypothesis~=6.137",
+    "pyright~=1.1.403",
+    "ruff~=0.14.10",
+    "pre-commit~=4.2",
+    "bandit~=1.9.2",
+    "pip-audit~=2.9",
+    "debugpy~=1.8",
+]
+
+docs = [
+    "sphinx~=8.0",
+    "sphinx-rtd-theme~=3.0",
+    "sphinx-autodoc-typehints~=3.0",
+    "myst-parser~=4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+exclude = [".venv", "__pycache__", "*.pyc", "pyxel_examples"]
+select = [
+    "E", "W",     # pycodestyle
+    "F",          # pyflakes
+    "I",          # isort
+    "B",          # bugbear
+    "SIM",        # simplify
+    "RUF",        # Ruff独自
+    "TCH",        # type-checking
+    "PTH",        # pathlib
+    "PL",         # Pylint
+    "S",          # セキュリティー
+    "C90",        # 複雑度
+    "N",          # 命名規約
+    "UP",         # Python 3.12+
+    "ANN",        # 型ヒント
+    "ASYNC",      # 非同期
+    "A",          # 組込名衝突
+    "DTZ",        # タイムゾーン
+    "RET",        # return
+    "ARG",        # 未使用引数
+    "T20",        # print禁止
+    "ERA",        # コメントアウト
+]
+
+ignore = [
+    # スタイル（formatter任せ）
+    "E501", "COM812",
+    # 型ヒント（部分的許容）
+    "ANN401",
+    # セキュリティー（テスト環境）
+    "S101", "S603", "S607",
+    # 複雑度（ビジネスロジック許容）
+    "PLR0911", "PLR0912", "PLR0913", "PLR0915", "PLR2004",
+    # 可読性優先
+    "PERF203", "RET504", "SIM108",
+    # Protocol/ABC対応
+    "ARG001", "ARG002",
+    # その他
+    "B007", "B008", "C401", "C408",
+    "F821", "F841", "G004", "T201",
+    "RUF001", "RUF002", "RUF003", "RUF012",
+    "PTH123", "PERF401",
+    "PLW0603", "PLC0206", "PLC2401", "PLW2901",
+    "TC001", "DTZ005", "ERA001",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15  # 複雑度上限（デフォルト10→15へ緩和）
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "ANN", "PLR2004", "ARG", "N"]  # テストコード除外
+"template/tests/**" = ["S", "ANN", "PLR2004", "ARG", "N"]  # テンプレートテストコード除外
+"**/__init__.py" = ["F401"]  # 再export許容
+"docs/conf.py" = ["INP001", "A001"]  # Sphinx設定
+
+[tool.pyright]
+include = ["src", "tests"]
+exclude = [".venv", "**/__pycache__"]
+pythonVersion = "3.12"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+
+# Type checking behavior
+strictParameterNoneValue = false
+
+# 重要なエラー（必ずエラーとして報告）
+reportMissingImports = "error"
+reportIncompatibleMethodOverride = "error"
+reportIncompatibleVariableOverride = "error"
+reportOverlappingOverload = "error"
+reportUnusedCoroutine = "error"
+reportMatchNotExhaustive = "error"
+reportUnusedImport = "error"
+reportDuplicateImport = "error"
+
+# 開発時に役立つ警告レベル
+reportUnusedClass = "warning"
+reportUnusedFunction = "warning"
+reportUnusedVariable = "warning"
+reportInconsistentConstructor = "warning"
+reportUninitializedInstanceVariable = "warning"
+reportUnnecessaryIsInstance = "warning"
+reportUnnecessaryCast = "warning"
+reportUnnecessaryComparison = "warning"
+reportUnnecessaryTypeIgnoreComment = "warning"
+
+# 開発を妨げない程度に無効化
+reportCallIssue = "none"
+reportAttributeAccessIssue = "none"
+reportMissingTypeStubs = "none"
+reportMissingSuperCall = "none"
+reportPrivateUsage = "none"
+reportImplicitStringConcatenation = "none"
+reportInvalidStubStatement = "none"
+reportIncompleteStub = "none"
+reportUnsupportedDunderAll = "none"
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov-branch",
+    "--cov=src",
+    # "--cov-fail-under=80",  # カバレッジの最低基準を80%に設定（必要に応じて変更）
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]

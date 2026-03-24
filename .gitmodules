@@ -1,0 +1,10 @@
+[submodule ".github/prompts"]
+	path = .github/prompts
+	url = https://github.com/studiogadget/prompts.git
+	branch = main
+	ignore = all
+[submodule ".github/skills"]
+	path = .github/skills
+	url = https://github.com/studiogadget/skills.git
+	branch = main
+	ignore = all
