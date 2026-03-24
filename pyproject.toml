@@ -55,7 +55,7 @@ indent-width = 4
 target-version = "py312"
 
 [tool.ruff.lint]
-exclude = [".venv", "__pycache__", "*.pyc"]
+exclude = [".venv", "__pycache__", "*.pyc", "pyxel_examples"]
 select = [
     "E", "W",     # pycodestyle
     "F",          # pyflakes
