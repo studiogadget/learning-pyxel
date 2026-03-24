@@ -1,0 +1,34 @@
+name: Setup Submodules
+description: Configure SSH and update submodules for private repositories
+
+inputs:
+  submodule_ssh_key:
+    description: SSH private key for accessing private submodules
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure SSH for private submodules
+      shell: bash
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
+        # SUBMODULE_SSH_KEY: prompts(private) に登録した Deploy Key の秘密鍵
+        echo "${{ inputs.submodule_ssh_key }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+
+        # known_hosts 登録
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+
+        # submodule 用にこの鍵を強制
+        echo "GIT_SSH_COMMAND=ssh -i ~/.ssh/id_ed25519 -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=yes" >> $GITHUB_ENV
+
+    - name: Update submodules
+      shell: bash
+      run: |
+        git config --global url."git@github.com:".insteadOf "https://github.com/"
+        git submodule sync --recursive
+        git submodule update --init --recursive

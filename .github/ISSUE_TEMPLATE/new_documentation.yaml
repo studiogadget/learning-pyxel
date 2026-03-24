@@ -1,0 +1,126 @@
+name: 新規ドキュメント
+description: 新しく作成するドキュメントの提案をしてください
+title: "[Documentation]: "
+labels: ["documentation", "triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新しいドキュメントの提案をありがとうございます！
+        あなたのアイデアがプロジェクトをより良くする助けになります。
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: ドキュメントの概要
+      description: 新しく作成するドキュメントの概要を記述してください
+      value: |
+        - ファイル形式：（例: Markdown, PowerPoint）
+        - 使用者：（例: 開発者, デザイナー）
+        - 使用目的：（例: 学習, 参照）
+        など
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: ドキュメントの説明
+      description: どのような内容を含める予定ですか？
+      value: |
+        〜という内容のドキュメントです。
+        具体的には〜のような情報を含める予定です。
+    validations:
+      required: true
+
+  - type: textarea
+    id: author
+    attributes:
+      label: ドキュメントの作成者
+      description: このドキュメントの作成者について記載してください
+      value: |
+        役職、関わったプロジェクト、必要なスキルセットなど
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: このドキュメントの重要度をどう考えますか？
+      options:
+        - 低（あれば便利）
+        - 中（効率が大幅に向上する）
+        - 高（これがないと困る）
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 受け入れ条件（Acceptance Criteria）
+      description: このドキュメントが完成したと判断する基準を記載してください
+      placeholder: |
+        - [ ] 〜の情報が網羅的に記載されている
+        - [ ] 〜の使用例が含まれている
+        - [ ] 図表が適切に配置されている
+        - [ ] レビューが完了している
+        - [ ] 適切な場所に配置されている
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依存関係
+      description: このドキュメント作成に関連する依存関係を記載してください
+      placeholder: |
+        【Issue間の依存】
+        - Depends on #XXX（このIssueを先に解決する必要がある場合）
+        - Related to #YYY（関連するIssue）
+
+        【技術的依存】
+        - 参照する既存ドキュメント
+        - 必要な情報源（コード、設計書など）
+
+        【前提条件】
+        - ドキュメント作成前に完了すべき作業
+
+  - type: input
+    id: estimated-hours
+    attributes:
+      label: 見積もり工数（Optional）
+      description: 作成にかかる時間の見積もり（時間単位）
+      placeholder: "例: 2, 4, 8"
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 追加のコンテキスト
+      description: その他、このドキュメントに関する情報があれば追加してください
+      value: |
+        - プルリクエストは日本語で作成してください。
+        - 参考リンク
+        - 類似機能を持つ他のプロジェクト
+        - スクリーンショット
+        など
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: 貢献について
+      options:
+        - label: このドキュメントの作成に協力する意思があります
+          required: false
+        - label: このドキュメントのレビューに協力する意思があります
+          required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: チェックリスト
+      description: 以下の項目を確認してください
+      options:
+        - label: 同様の要望が既に存在しないことを確認しました
+          required: true
+        - label: このドキュメントがプロジェクトの目的に合致することを確認しました
+          required: true

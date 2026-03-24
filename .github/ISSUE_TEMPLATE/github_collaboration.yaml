@@ -1,0 +1,167 @@
+name: GitHub Copilot協働の改善
+description: GitHub Copilotとの協働体験の改善提案
+title: "[GitHub Copilot]: "
+labels: ["github-copilot", "enhancement", "triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        GitHub Copilotの協働体験の改善にご協力いただきありがとうございます！
+        copilot-instructions.mdや開発プロセスの改善提案をお聞かせください。
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 改善カテゴリ
+      description: どの分野の改善提案ですか？
+      options:
+        - copilot-instructions.mdの内容改善
+        - プロンプト（.prompt.md）の内容改善
+        - プロンプト（.prompt.md）の追加
+        - 開発プロセスの改善
+        - ドキュメント構造の改善
+        - 自動化の追加
+        - その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-problem
+    attributes:
+      label: 現在の問題
+      description: GitHub Copilotとの協働で困っていることや改善したいことを説明してください
+      placeholder: |
+        - 特定の作業でGitHub Copilotが迷うことが多い
+        - copilot-instructions.mdに足りない情報がある
+        - 繰り返し同じ説明をする必要がある
+        など
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 提案する改善策
+      description: どのような改善を提案しますか？
+      placeholder: |
+        - copilot-instructions.mdに〜の情報を追加する
+        - プロンプト（.prompt.md）に～の処理を追加する
+        - ～の処理をプロンプト（.prompt.md）化する
+        - 〜の作業をスクリプト化する
+        - 〜のドキュメントを作成する
+        など
+    validations:
+      required: true
+
+  - type: textarea
+    id: claude-md-addition
+    attributes:
+      label: copilot-instructions.mdへの追加内容（該当する場合）
+      description: copilot-instructions.mdに追加したい内容があれば記載してください
+      render: markdown
+      placeholder: |
+        ```markdown
+        ## 新しいセクション
+
+        ### 説明
+        このセクションでは〜について説明します。
+
+        ### 例
+        ```python
+        # 例のコード
+        ```
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 期待される効果
+      description: この改善により、どのような効果を期待しますか？
+      placeholder: |
+        - GitHub Copilotとのやり取りが〜％効率化される
+        - 新メンバーのオンボーディング時間が短縮される
+        - 繰り返し作業が自動化される
+        など
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: 具体例・参考資料
+      description: 具体的な例や参考になる資料があれば記載してください
+      placeholder: |
+        - 他のプロジェクトでの類似例
+        - 参考文献のリンク
+        - スクリーンショット
+        など
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: 受け入れ条件（Acceptance Criteria）
+      description: この改善が完了したと判断する基準を記載してください
+      placeholder: |
+        - [ ] copilot-instructions.mdに〜が追加されている
+        - [ ] プロンプト（.prompt.md）が作成されている
+        - [ ] GitHub Copilotが〜の作業を正しく実行できる
+        - [ ] ドキュメントが更新されている
+        - [ ] 改善の効果が検証されている
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: 依存関係
+      description: この改善に関連する依存関係を記載してください
+      placeholder: |
+        【Issue間の依存】
+        - Depends on #XXX（このIssueを先に解決する必要がある場合）
+        - Related to #YYY（関連するIssue）
+
+        【技術的依存】
+        - 依存する既存ドキュメント
+        - 関連するプロンプト（.prompt.md）
+        - 必要なツールやスクリプト
+
+        【前提条件】
+        - 改善前に完了すべき作業
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影響範囲
+      description: この改善が影響する範囲を記載してください
+      placeholder: |
+        - 影響を受けるドキュメント: （例: copilot-instructions.md, 特定のガイド）
+        - 影響を受ける開発プロセス: （例: タスク分解、コードレビュー）
+        - 影響を受けるメンバー: （例: すべての開発者、特定の役割）
+
+  - type: input
+    id: estimated-hours
+    attributes:
+      label: 見積もり工数（Optional）
+      description: 実装にかかる時間の見積もり（時間単位）
+      placeholder: "例: 2, 4, 8"
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: 貢献について
+      options:
+        - label: この改善の実装に協力する意思があります
+          required: false
+        - label: ドキュメントの作成に協力する意思があります
+          required: false
+        - label: テスト・検証に協力する意思があります
+          required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: チェックリスト
+      description: 以下の項目を確認してください
+      options:
+        - label: 同様の提案が既に存在しないことを確認しました
+          required: true
+        - label: この提案がプロジェクトの目的に合致することを確認しました
+          required: true
