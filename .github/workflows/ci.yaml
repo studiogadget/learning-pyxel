@@ -1,0 +1,174 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+  # 毎週月曜日の朝（JST 9:00相当 = UTC 0:00）に定期実行
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: &python_ver "3.12"
+  UV_CACHE_DIR: /tmp/.uv-cache
+  RUNNER_OS: &runner ubuntu-24.04
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: *runner
+    # Draft PRでは実行しない（push/schedule/workflow_dispatchでは常に実行）
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    steps:
+      - name: Checkout main repository (no submodules)
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Setup submodules
+        uses: ./.github/actions/setup-submodules
+        with:
+          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python pin ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies (lock-file, extras)
+        run: uv sync --frozen --extra dev
+        # 必要に応じて依存関係を追加
+        # uv sync --frozen --extra dev --extra rpa
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Set up Go (for gitleaks in pre-commit)
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.22.x"
+
+      - name: Run pre-commit
+        run: uv run pre-commit run --all-files
+
+      - name: Check for security issues
+        run: |
+          uv run pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph
+          uv run bandit -r src/ -c pyproject.toml
+
+  type-check:
+    name: Type Check
+    runs-on: *runner
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    steps:
+      - name: Checkout main repository (no submodules)
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+
+      - name: Setup submodules
+        uses: ./.github/actions/setup-submodules
+        with:
+          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        run: uv python pin ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies (lock-file, extras)
+        run: uv sync --frozen --extra dev
+        # 必要に応じて依存関係を追加
+        # uv sync --frozen --extra dev --extra rpa
+
+      - name: Run pyright
+        run: uv run pyright src/
+
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [*python_ver]
+        os: [*runner]
+
+    steps:
+      - name: Checkout main repository (no submodules)
+        uses: actions/checkout@v6
+        with:
+          submodules: false
+
+      - name: Setup submodules
+        uses: ./.github/actions/setup-submodules
+        with:
+          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python pin ${{ matrix.python-version }}
+
+      - name: Install dependencies (lock-file, extras)
+        run: uv sync --frozen --extra dev
+        # 必要に応じて依存関係を追加
+        # uv sync --frozen --extra dev --extra rpa
+
+      - name: Run tests
+        run: |
+          uv run pytest tests/ \
+            --ignore=tests/poc \
+            -m "not docker and not slow" \
+            --cov=src \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            --cov-report=html \
+            --junit-xml=test-results.xml \
+            -v
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: test-results.xml
+
+  all-checks:
+    name: All Checks Passed
+    runs-on: *runner
+    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.draft == false) }}
+    needs:
+      - lint
+      - type-check
+      - test
+    steps:
+      - name: Decide whether the all jobs succeeded
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
