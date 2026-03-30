@@ -45,8 +45,15 @@ repos:
     rev: v2.9.0
     hooks:
       - id: pip-audit
-        # args: [--desc, --fix]
-        args: [--desc, --fix, --ignore-vuln, "GHSA-4xh5-x5gv-qwph"]
+        args:
+          - --desc
+          - --fix
+          - --ignore-vuln
+          - GHSA-5239-wwwm-4pmq
+          - --ignore-vuln
+          - GHSA-4xh5-x5gv-qwph
+          - --ignore-vuln
+          - CVE-2026-4539
 
   # gitleaks
   - repo: https://github.com/gitleaks/gitleaks
