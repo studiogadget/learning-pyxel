@@ -47,6 +47,7 @@ coverage.xml
 *.log
 logs/*
 **/secret/
+.github/prompts/
 
 # Documentation
 .sphinx/

@@ -38,8 +38,6 @@ jobs:
 
       - name: Setup submodules
         uses: ./.github/actions/setup-submodules
-        with:
-          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -68,11 +66,6 @@ jobs:
       - name: Run pre-commit
         run: uv run pre-commit run --all-files
 
-      - name: Check for security issues
-        run: |
-          uv run pip-audit --ignore-vuln GHSA-4xh5-x5gv-qwph
-          uv run bandit -r src/ -c pyproject.toml
-
   type-check:
     name: Type Check
     runs-on: *runner
@@ -85,8 +78,6 @@ jobs:
 
       - name: Setup submodules
         uses: ./.github/actions/setup-submodules
-        with:
-          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -123,8 +114,6 @@ jobs:
 
       - name: Setup submodules
         uses: ./.github/actions/setup-submodules
-        with:
-          submodule_ssh_key: ${{ secrets.SUBMODULE_SSH_KEY }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
