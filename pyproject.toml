@@ -9,7 +9,7 @@ dependencies = [
     # 環境変数の読み込み（Docker/ローカル運用で使用）
     "python-dotenv~=1.0",
     # Windows等でのIANAタイムゾーンデータ供給（ZoneInfoで使用）
-    "tzdata~=2025.2",
+    "tzdata~=2026.1",
     "pyxel>=2.8.7",
 ]
 authors = [
